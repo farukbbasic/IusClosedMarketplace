@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "n/bjL6+7vnQ=",
+  "dgSpecHash": "XlEw6bib+7c=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
+  "projectFilePath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Korisnik\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
-    "C:\\Users\\Korisnik\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.24\\microsoft.windowsdesktop.app.ref.8.0.24.nupkg.sha512",
-    "C:\\Users\\Korisnik\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.24\\microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512"
+    "C:\\Users\\DT User\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\DT User\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.24\\microsoft.windowsdesktop.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\DT User\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.24\\microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512"
   ],
   "logs": []
 }

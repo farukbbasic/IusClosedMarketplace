@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IUSClosedMarketplace.Persistence")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00975ec3ca49cc27ec057eaebe7e51460b0a0d44")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6531553eec92da07c1551a3bd8c370a3e7959182")]
 [assembly: System.Reflection.AssemblyProductAttribute("IUSClosedMarketplace.Persistence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IUSClosedMarketplace.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

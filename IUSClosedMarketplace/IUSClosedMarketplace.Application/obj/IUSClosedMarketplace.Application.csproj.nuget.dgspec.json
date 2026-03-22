@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj": {}
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj": {
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj",
+        "projectUniqueName": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj",
         "projectName": "IUSClosedMarketplace.Application",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\obj\\",
+        "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\IUSClosedMarketplace.Application.csproj",
+        "packagesPath": "C:\\Users\\DT User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\DT User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -26,14 +26,14 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
-                "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
+              "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
+                "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
               },
-              "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj"
+              "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj"
               },
-              "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj": {
-                "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj"
+              "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj": {
+                "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj"
               }
             }
           }
@@ -97,17 +97,17 @@
         }
       }
     },
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
         "projectName": "IUSClosedMarketplace.Domain",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\obj\\",
+        "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
+        "packagesPath": "C:\\Users\\DT User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\DT User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -170,17 +170,17 @@
         }
       }
     },
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj": {
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj",
         "projectName": "IUSClosedMarketplace.Infrastructure",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\IUSClosedMarketplace.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\DT User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\DT User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -192,8 +192,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
-                "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
+              "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
+                "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
               }
             }
           }
@@ -257,17 +257,17 @@
         }
       }
     },
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj": {
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj",
+        "projectUniqueName": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj",
         "projectName": "IUSClosedMarketplace.Persistence",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\obj\\",
+        "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\IUSClosedMarketplace.Persistence.csproj",
+        "packagesPath": "C:\\Users\\DT User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\DT User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -279,8 +279,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
-                "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
+              "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
+                "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj"
               }
             }
           }

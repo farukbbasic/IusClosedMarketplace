@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {}
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
+    "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
         "projectName": "IUSClosedMarketplace.Domain",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\Testtt\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\obj\\",
+        "projectPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\IUSClosedMarketplace.Domain.csproj",
+        "packagesPath": "C:\\Users\\DT User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DT User\\Desktop\\test2\\IusClosedMarketplace\\IUSClosedMarketplace\\IUSClosedMarketplace.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\DT User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
