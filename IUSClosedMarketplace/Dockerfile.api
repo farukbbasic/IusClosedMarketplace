@@ -1,0 +1,31 @@
+# ─── Build stage ─────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and project files first (better layer caching)
+COPY IUSClosedMarketplace.sln .
+COPY IUSClosedMarketplace.Domain/IUSClosedMarketplace.Domain.csproj IUSClosedMarketplace.Domain/
+COPY IUSClosedMarketplace.Persistence/IUSClosedMarketplace.Persistence.csproj IUSClosedMarketplace.Persistence/
+COPY IUSClosedMarketplace.Infrastructure/IUSClosedMarketplace.Infrastructure.csproj IUSClosedMarketplace.Infrastructure/
+COPY IUSClosedMarketplace.Application/IUSClosedMarketplace.Application.csproj IUSClosedMarketplace.Application/
+COPY IUSClosedMarketplace.API/IUSClosedMarketplace.API.csproj IUSClosedMarketplace.API/
+
+# Restore dependencies
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . .
+RUN dotnet publish IUSClosedMarketplace.API/IUSClosedMarketplace.API.csproj -c Release -o /app/publish
+
+# ─── Runtime stage ───────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+# Create wwwroot for static files
+RUN mkdir -p /app/wwwroot/uploads
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "IUSClosedMarketplace.API.dll"]

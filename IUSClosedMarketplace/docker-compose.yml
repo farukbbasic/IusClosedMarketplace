@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # ─── SQL Server Database ─────────────────────────────────────────────────
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ius-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "IusMarket@2025!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "IusMarket@2025!" -Q "SELECT 1" -C -b
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ─── .NET API Backend ────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: ius-api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=db;Database=IUSClosedMarketplace;User Id=sa;Password=IusMarket@2025!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      Jwt__Key: "YourSuperSecretKeyThatIsAtLeast32CharactersLong!"
+      Jwt__Issuer: "IUSClosedMarketplace"
+      Jwt__Audience: "IUSClosedMarketplace"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  # ─── React Frontend ─────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ius-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlserver-data:
