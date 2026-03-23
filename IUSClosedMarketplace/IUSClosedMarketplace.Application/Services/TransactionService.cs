@@ -71,7 +71,7 @@ public class TransactionService : ITransactionService
             TotalUsers = await _context.Users.CountAsync(),
             ActiveListings = await _context.Listings.CountAsync(l => l.IsActive),
             TotalTransactions = await _context.Transactions.CountAsync(),
-            TotalRevenue = await _context.Transactions.SumAsync(t => t.Amount),
+            TotalRevenue = await _context.Transactions.SumAsync(t => (decimal?)t.Amount) ?? 0,
             PendingReports = await _context.Reports.CountAsync(r => r.Status == ReportStatus.Pending)
         };
 
@@ -102,15 +102,23 @@ public class TransactionService : ITransactionService
             .ToListAsync();
 
         // Monthly revenue
-        analytics.MonthlyRevenue = await _context.Transactions
+// Monthly revenue
+        var revenueData = await _context.Transactions
             .GroupBy(t => new { t.CreatedAt.Year, t.CreatedAt.Month })
-            .Select(g => new MonthlyRevenueDto
+            .Select(g => new
             {
-                Month = $"{g.Key.Year}-{g.Key.Month:D2}",
-                Revenue = g.Sum(t => t.Amount)
+                g.Key.Year,
+                g.Key.Month,
+                Revenue = g.Sum(t => (decimal?)t.Amount) ?? 0
             })
-            .OrderBy(m => m.Month)
+            .OrderBy(g => g.Year).ThenBy(g => g.Month)
             .ToListAsync();
+
+        analytics.MonthlyRevenue = revenueData.Select(g => new MonthlyRevenueDto
+        {
+            Month = $"{g.Year}-{g.Month:D2}",
+            Revenue = g.Revenue
+        }).ToList();
 
         return analytics;
     }

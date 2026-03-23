@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IUSClosedMarketplace.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6531553eec92da07c1551a3bd8c370a3e7959182")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab0b18b589aee9ee02376c32ac1ceaf91a57e90b")]
 [assembly: System.Reflection.AssemblyProductAttribute("IUSClosedMarketplace.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IUSClosedMarketplace.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
