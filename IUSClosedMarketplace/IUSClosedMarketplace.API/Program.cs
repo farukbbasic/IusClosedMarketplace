@@ -3,6 +3,7 @@ using IUSClosedMarketplace.API.Middleware;
 using IUSClosedMarketplace.Application.Interfaces.Services;
 using IUSClosedMarketplace.Application.Mappings;
 using IUSClosedMarketplace.Application.Services;
+using IUSClosedMarketplace.Infrastructure.Hubs;
 using IUSClosedMarketplace.Infrastructure.Services;
 using IUSClosedMarketplace.Persistence.Context;
 using IUSClosedMarketplace.Persistence.Repositories.Implementations;
@@ -35,6 +36,10 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IChatNotificationService, ChatNotificationService>();
+
+// ─── SignalR ─────────────────────────────────────────────────────────────────
+builder.Services.AddSignalR();
 
 // ─── AutoMapper ─────────────────────────────────────────────────────────────
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -57,6 +62,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+    };
+    // SignalR passes JWT via query string (browsers can't set WS headers)
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Query["access_token"];
+            if (!string.IsNullOrEmpty(token) &&
+                context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -107,9 +126,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // Required for SignalR
     });
 });
 
@@ -129,6 +149,7 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 // ─── Database initialization ────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())

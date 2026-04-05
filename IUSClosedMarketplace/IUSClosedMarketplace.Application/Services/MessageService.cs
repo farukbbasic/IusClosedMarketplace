@@ -10,11 +10,16 @@ public class MessageService : IMessageService
 {
     private readonly IMessageRepository _messageRepository;
     private readonly IMapper _mapper;
+    private readonly IChatNotificationService _chatNotification;
 
-    public MessageService(IMessageRepository messageRepository, IMapper mapper)
+    public MessageService(
+        IMessageRepository messageRepository,
+        IMapper mapper,
+        IChatNotificationService chatNotification)
     {
         _messageRepository = messageRepository;
         _mapper = mapper;
+        _chatNotification = chatNotification;
     }
 
     public async Task<IEnumerable<MessageDto>> GetConversationAsync(int userId, int otherUserId, int listingId)
@@ -63,12 +68,18 @@ public class MessageService : IMessageService
             Content = dto.Content
         };
 
-        var created = await _messageRepository.CreateAsync(message);
+        await _messageRepository.CreateAsync(message);
 
         // Re-fetch to get navigation properties
         var conversation = await _messageRepository.GetConversationAsync(senderId, dto.ReceiverId, dto.ListingId);
         var latest = conversation.OrderByDescending(m => m.CreatedAt).First();
+        var messageDto = _mapper.Map<MessageDto>(latest);
 
-        return _mapper.Map<MessageDto>(latest);
+        // Push to all SignalR clients in this thread group
+        // Thread key is the canonical pair: smaller ID first
+        int threadId = Math.Min(senderId, dto.ReceiverId) * 100000 + Math.Max(senderId, dto.ReceiverId);
+        await _chatNotification.NotifyNewMessage(threadId, messageDto);
+
+        return messageDto;
     }
 }

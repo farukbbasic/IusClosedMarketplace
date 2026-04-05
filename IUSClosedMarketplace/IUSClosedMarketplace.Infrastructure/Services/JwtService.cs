@@ -5,12 +5,9 @@ using IUSClosedMarketplace.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IUSClosedMarketplace.Infrastructure.Services;
+using IUSClosedMarketplace.Application.Interfaces.Services;
 
-public interface IJwtService
-{
-    string GenerateToken(User user);
-}
+namespace IUSClosedMarketplace.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {

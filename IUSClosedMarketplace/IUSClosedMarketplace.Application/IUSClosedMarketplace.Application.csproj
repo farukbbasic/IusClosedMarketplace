@@ -11,6 +11,5 @@
   <ItemGroup>
     <ProjectReference Include="..\IUSClosedMarketplace.Domain\IUSClosedMarketplace.Domain.csproj" />
     <ProjectReference Include="..\IUSClosedMarketplace.Persistence\IUSClosedMarketplace.Persistence.csproj" />
-    <ProjectReference Include="..\IUSClosedMarketplace.Infrastructure\IUSClosedMarketplace.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

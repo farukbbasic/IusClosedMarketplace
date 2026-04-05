@@ -2,7 +2,6 @@ using IUSClosedMarketplace.Application.DTOs.Auth;
 using IUSClosedMarketplace.Application.Interfaces.Services;
 using IUSClosedMarketplace.Domain.Entities;
 using IUSClosedMarketplace.Domain.Enums;
-using IUSClosedMarketplace.Infrastructure.Services;
 using IUSClosedMarketplace.Persistence.Repositories.Interfaces;
 
 namespace IUSClosedMarketplace.Application.Services;
