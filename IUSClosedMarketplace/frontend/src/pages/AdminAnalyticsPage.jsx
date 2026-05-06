@@ -23,18 +23,23 @@ export default function AdminAnalyticsPage() {
 
   return (
     <>
-      <div className="page-header"><h2>Analytics</h2><p>Platform statistics and insights</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Analytics</h2>
+          <p>Platform statistics and insights</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         <div className="stats-grid">
           <div className="stat-card blue"><div className="label">Total Revenue</div><div className="value">{analytics.totalRevenue} KM</div></div>
-          <div className="stat-card green"><div className="label">Avg Listing Price</div><div className="value">{Math.round(analytics.averageListingPrice)} KM</div></div>
+          <div className="stat-card green"><div className="label">Avg Item Price</div><div className="value">{Math.round(analytics.averageListingPrice)} KM</div></div>
           <div className="stat-card amber"><div className="label">Pending Reports</div><div className="value">{analytics.pendingReports}</div></div>
-          <div className="stat-card purple"><div className="label">Active Listings</div><div className="value">{analytics.activeListings}</div></div>
+          <div className="stat-card purple"><div className="label">Active Items</div><div className="value">{analytics.activeListings}</div></div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
           <div className="card" style={{ padding: 20 }}>
-            <h3 style={{ fontSize: 14, marginBottom: 20, color: 'var(--text2)' }}>Listings per Category</h3>
+            <h3 style={{ fontSize: 14, marginBottom: 20, color: 'var(--text2)' }}>Items per Category</h3>
             <div className="bar-chart">
               {analytics.listingsPerCategory.map((c, i) => (
                 <div className="bar-item" key={c.categoryName}>

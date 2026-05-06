@@ -22,7 +22,12 @@ export default function FavoritesPage() {
 
   return (
     <>
-      <div className="page-header"><h2>Favorites</h2><p>Items you've saved for later</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Saved</h2>
+          <p>Items you've saved for later</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         {loading ? <p>Loading...</p> : listings.length === 0 ? (
           <div className="empty-state"><div className="icon">💜</div><p>No saved items yet</p></div>

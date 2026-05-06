@@ -72,14 +72,16 @@ export default function BrowsePage() {
   return (
     <>
       <div className="page-header">
-        <h2>Browse Marketplace</h2>
-        <p>Find what you need from the IUS community</p>
+        <div className="page-header-text">
+          <h2>Browse</h2>
+          <p>Find what you need from the IUS community</p>
+        </div>
       </div>
       <div className="page-body fade-in">
         <div className="filters-bar">
           <div className="search-box">
             <span style={{ color: 'var(--text3)' }}>🔍</span>
-            <input placeholder="Search listings..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <input placeholder="Search items..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">All Categories</option>
@@ -101,7 +103,7 @@ export default function BrowsePage() {
         {loading ? (
           <div className="empty-state"><p>Loading...</p></div>
         ) : listings.length === 0 ? (
-          <div className="empty-state"><div className="icon">🔍</div><p>No listings found</p></div>
+          <div className="empty-state"><div className="icon">🔍</div><p>No items found</p></div>
         ) : (
           <div className="listings-grid">
             {listings.map((l) => (

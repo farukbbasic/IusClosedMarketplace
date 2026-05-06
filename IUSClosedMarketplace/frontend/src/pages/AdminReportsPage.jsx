@@ -31,7 +31,12 @@ export default function AdminReportsPage() {
 
   return (
     <>
-      <div className="page-header"><h2>Reports & Moderation</h2><p>Review flagged content</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Reports</h2>
+          <p>Review flagged content</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         <div className="tabs">
           <button className={`tab ${tab === 'pending' ? 'active' : ''}`} onClick={() => setTab('pending')}>
@@ -44,7 +49,7 @@ export default function AdminReportsPage() {
         ) : (
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Listing</th><th>Reporter</th><th>Reason</th><th>Date</th><th>Status</th>{tab === 'pending' && <th>Actions</th>}</tr></thead>
+              <thead><tr><th>Item</th><th>Reporter</th><th>Reason</th><th>Date</th><th>Status</th>{tab === 'pending' && <th>Actions</th>}</tr></thead>
               <tbody>
                 {filtered.map((r) => (
                   <tr key={r.id}>

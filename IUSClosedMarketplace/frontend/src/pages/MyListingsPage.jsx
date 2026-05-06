@@ -42,10 +42,10 @@ export default function MyListingsPage() {
     try {
       if (modal === 'create') {
         await listingsApi.create({ ...form, price: Number(form.price), categoryId: Number(form.categoryId) });
-        showToast('Listing created!');
+        showToast('Item posted!');
       } else {
         await listingsApi.update(editItem.id, { ...form, price: Number(form.price), categoryId: Number(form.categoryId) });
-        showToast('Listing updated!');
+        showToast('Item updated!');
       }
       setModal(null);
       load();
@@ -57,20 +57,23 @@ export default function MyListingsPage() {
   const deleteListing = async (id) => {
     try {
       await listingsApi.delete(id);
-      showToast('Listing removed');
+      showToast('Item removed');
       load();
     } catch { }
   };
 
   return (
     <>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div><h2>My Listings</h2><p>Manage your items for sale</p></div>
-        <button className="btn btn-primary" onClick={openCreate}>+ New Listing</button>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>My Items</h2>
+          <p>Manage your items for sale</p>
+        </div>
+        <button className="btn btn-primary" onClick={openCreate}>+ New Item</button>
       </div>
       <div className="page-body fade-in">
         {loading ? <p>Loading...</p> : listings.filter((l) => l.isActive).length === 0 ? (
-          <div className="empty-state"><div className="icon">📦</div><p>You haven't listed anything yet</p></div>
+          <div className="empty-state"><div className="icon">📦</div><p>Nothing posted yet</p></div>
         ) : (
           <div className="table-wrap">
             <table>
@@ -98,8 +101,8 @@ export default function MyListingsPage() {
       </div>
 
       {modal && (
-        <Modal title={modal === 'create' ? 'New Listing' : 'Edit Listing'} onClose={() => setModal(null)} footer={
-          <><button className="btn btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary" onClick={save}>{modal === 'create' ? 'Create' : 'Save'}</button></>
+        <Modal title={modal === 'create' ? 'New Item' : 'Edit Item'} onClose={() => setModal(null)} footer={
+          <><button className="btn btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary" onClick={save}>{modal === 'create' ? 'Post' : 'Save'}</button></>
         }>
           <div className="form-group"><label>Title</label><input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Item name" /></div>
           <div className="form-group"><label>Description</label><textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe your item..." /></div>

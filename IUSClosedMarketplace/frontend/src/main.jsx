@@ -6,6 +6,7 @@ import { msalInstance, initializeMsal } from './auth/authConfig'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import App from './App'
+import './globals.css'
 import './styles.css'
 
 // MSAL must be initialized BEFORE any component tries to read its state.

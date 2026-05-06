@@ -42,7 +42,12 @@ export default function TransactionsPage() {
 
   return (
     <>
-      <div className="page-header"><h2>Transactions</h2><p>Your purchase and sale history</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Transactions</h2>
+          <p>Your purchase and sale history</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         <button className="btn btn-primary" style={{ marginBottom: 16 }} onClick={openPurchaseModal}>
           ✓ Complete a Purchase
@@ -70,7 +75,7 @@ export default function TransactionsPage() {
       </div>
       {showModal && (
         <Modal title="Complete a Purchase" onClose={() => setShowModal(false)}>
-          <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>Select a listing you've purchased:</p>
+          <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>Select an item you purchased:</p>
           {availableListings.length === 0 ? <p style={{ color: 'var(--text3)' }}>No listings available</p> :
             availableListings.map((l) => (
               <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>

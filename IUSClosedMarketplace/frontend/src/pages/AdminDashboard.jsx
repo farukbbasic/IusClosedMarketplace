@@ -17,11 +17,16 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <div className="page-header"><h2>Admin Dashboard</h2><p>System overview</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Dashboard</h2>
+          <p>System overview</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         <div className="stats-grid">
           <div className="stat-card blue"><div className="label">Total Users</div><div className="value">{analytics.totalUsers}</div></div>
-          <div className="stat-card green"><div className="label">Active Listings</div><div className="value">{analytics.activeListings}</div></div>
+          <div className="stat-card green"><div className="label">Active Items</div><div className="value">{analytics.activeListings}</div></div>
           <div className="stat-card amber"><div className="label">Pending Reports</div><div className="value">{analytics.pendingReports}</div></div>
           <div className="stat-card purple"><div className="label">Transactions</div><div className="value">{analytics.totalTransactions}</div><div className="sub">{analytics.totalRevenue} KM total</div></div>
         </div>

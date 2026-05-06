@@ -28,7 +28,12 @@ export default function AdminUsersPage() {
 
   return (
     <>
-      <div className="page-header"><h2>User Management</h2><p>Manage registered users</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Users</h2>
+          <p>Manage registered accounts</p>
+        </div>
+      </div>
       <div className="page-body fade-in">
         {loading ? <p>Loading...</p> : (
           <div className="table-wrap">

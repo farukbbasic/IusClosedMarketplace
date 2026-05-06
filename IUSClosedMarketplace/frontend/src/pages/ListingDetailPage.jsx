@@ -26,7 +26,7 @@ export default function ListingDetailPage() {
       const res = await listingsApi.getById(id);
       setListing(res.data);
     } catch {
-      showToast('Listing not found', 'error');
+      showToast('Item not found', 'error');
       navigate('/');
     } finally {
       setLoading(false);
@@ -82,8 +82,10 @@ export default function ListingDetailPage() {
   return (
     <>
       <div className="page-header">
-        <button className="btn btn-ghost" onClick={() => navigate(-1)} style={{ marginBottom: 8 }}>← Back</button>
-        <h2>{listing.title}</h2>
+        <div className="page-header-text">
+          <button className="btn btn-ghost" onClick={() => navigate(-1)} style={{ padding: '0 0 4px', fontSize: 12 }}>← Back</button>
+          <h2>{listing.title}</h2>
+        </div>
       </div>
       <div className="page-body fade-in">
         <div className="detail-layout">

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Sidebar from './components/Sidebar'
@@ -13,12 +14,16 @@ import AdminUsersPage from './pages/AdminUsersPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage'
 
+const SIDEBAR_W = 240
+const SIDEBAR_W_COLLAPSED = 64
+
 export default function App() {
   const { user, loading } = useAuth()
+  const [collapsed, setCollapsed] = useState(false)
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#9AA3B8' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text3)' }}>
         Loading...
       </div>
     )
@@ -34,8 +39,11 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar />
-      <div className="main-content">
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
+      <div
+        className="main-content"
+        style={{ marginLeft: collapsed ? SIDEBAR_W_COLLAPSED : SIDEBAR_W }}
+      >
         <Routes>
           <Route path="/" element={<BrowsePage />} />
           <Route path="/listings/:id" element={<ListingDetailPage />} />
