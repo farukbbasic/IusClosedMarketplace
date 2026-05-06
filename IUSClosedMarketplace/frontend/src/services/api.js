@@ -1,42 +1,44 @@
 import axios from 'axios';
+import { getApiAccessToken, msalInstance } from '../auth/authConfig';
 
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' }
 });
 
-// Attach JWT token to every request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Attach a fresh Azure AD access token to every request.
+// MSAL caches tokens internally and only contacts the IdP when the cached
+// token is near expiry, so this is cheap on the hot path.
+api.interceptors.request.use(async (config) => {
+  try {
+    const token = await getApiAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (err) {
+    // Don't block the request on token errors — let the server respond with
+    // 401 and the response interceptor will trigger an interactive login.
+    console.warn('Failed to acquire access token:', err);
   }
   return config;
 });
 
-// Handle 401 globally
+// Handle 401 globally — kick the user back to interactive sign-in.
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
     if (err.response?.status === 401) {
-      const isAuthRequest = err.config?.url?.startsWith('/auth/');
-      if (!isAuthRequest) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+      // Clear any active account and trigger a redirect login.
+      const account = msalInstance.getActiveAccount();
+      if (account) {
+        await msalInstance.logoutRedirect({
+          postLogoutRedirectUri: 'http://localhost:5173/'
+        });
       }
     }
     return Promise.reject(err);
   }
 );
-
-// ─── Auth ─────────────────────────────────────────────────────────────────
-export const authApi = {
-  register: (data) => api.post('/auth/register', data),
-  login: (data) => api.post('/auth/login', data),
-};
-
-
 
 // ─── Users ────────────────────────────────────────────────────────────────
 export const usersApi = {
@@ -83,6 +85,13 @@ export const transactionsApi = {
   getMine: () => api.get('/transactions'),
   create: (data) => api.post('/transactions', data),
   getAnalytics: () => api.get('/transactions/analytics'),
+};
+
+// ─── Auth (kept for compatibility — register/login are no-ops with Azure) ──
+// These exports remain so any old imports don't crash, but you should not call them.
+export const authApi = {
+  register: () => Promise.reject(new Error('Use Azure AD sign-in instead.')),
+  login: () => Promise.reject(new Error('Use Azure AD sign-in instead.')),
 };
 
 export default api;

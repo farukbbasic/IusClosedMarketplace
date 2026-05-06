@@ -1,31 +1,32 @@
-using IUSClosedMarketplace.Application.DTOs.Auth;
-using IUSClosedMarketplace.Application.Interfaces.Services;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IUSClosedMarketplace.API.Controllers;
 
+/// <summary>
+/// With Azure AD as the identity provider, register and login no longer happen
+/// in our backend. This controller now only exposes a simple "who am I"
+/// endpoint that works against the Azure-issued token, useful for debugging.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
-
-    public AuthController(IAuthService authService)
+    /// <summary>
+    /// Returns the claims attached to the current bearer token, after the
+    /// AzureAdClaimsTransformation has resolved the internal user id.
+    /// </summary>
+    [HttpGet("whoami")]
+    [Authorize]
+    public ActionResult WhoAmI()
     {
-        _authService = authService;
-    }
-
-    [HttpPost("register")]
-    public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto dto)
-    {
-        var result = await _authService.RegisterAsync(dto);
-        return Ok(result);
-    }
-
-    [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto dto)
-    {
-        var result = await _authService.LoginAsync(dto);
-        return Ok(result);
+        return Ok(new
+        {
+            internalId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            name = User.FindFirstValue(ClaimTypes.Name),
+            email = User.FindFirstValue(ClaimTypes.Email),
+            role = User.FindFirstValue(ClaimTypes.Role)
+        });
     }
 }

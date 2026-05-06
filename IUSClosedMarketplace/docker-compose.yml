@@ -32,22 +32,31 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__DefaultConnection: "Server=db;Database=IUSClosedMarketplace;User Id=sa;Password=IusMarket@2025!;TrustServerCertificate=True;MultipleActiveResultSets=true"
-      Jwt__Key: "YourSuperSecretKeyThatIsAtLeast32CharactersLong!"
-      Jwt__Issuer: "IUSClosedMarketplace"
-      Jwt__Audience: "IUSClosedMarketplace"
+      # ─── Azure AD configuration ────────────────────────────────────────
+      AzureAd__Instance: "https://login.microsoftonline.com/"
+      AzureAd__TenantId: "2f2dcb5d-f3e1-4f33-8584-dcacd25d604d"
+      AzureAd__ClientId: "562c6df4-0ce8-4165-8969-f300f4c1842a"
+      AzureAd__Audience: "api://562c6df4-0ce8-4165-8969-f300f4c1842a"
+      # Legacy JWT settings still in appsettings.json — unused at runtime
+      # but harmless. Remove once you're sure nothing references them.
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
 
   # ─── React Frontend ─────────────────────────────────────────────────────
+  # Note: this is the production build (nginx). Local dev with `npm run dev`
+  # runs on port 5173 directly on the host — that's the redirect URI Azure AD
+  # has whitelisted. If you want the dockerized frontend to use Azure AD too,
+  # also whitelist http://localhost:3000 in the Azure portal and update the
+  # MSAL redirectUri in src/auth/authConfig.js.
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: ius-frontend
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       - api
 

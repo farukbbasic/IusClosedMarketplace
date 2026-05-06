@@ -48,7 +48,7 @@ public class ListingsController : ControllerBase
     }
 
     [HttpGet("my-listings")]
-    [Authorize(Roles = "Seller,Admin")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<ListingDto>>> GetMyListings()
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -57,7 +57,7 @@ public class ListingsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Seller,Admin")]
+    [Authorize]
     public async Task<ActionResult<ListingDto>> Create([FromBody] CreateListingDto dto)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -66,7 +66,7 @@ public class ListingsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Seller,Admin")]
+    [Authorize]
     public async Task<ActionResult<ListingDto>> Update(int id, [FromBody] UpdateListingDto dto)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

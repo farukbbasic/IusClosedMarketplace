@@ -1,56 +1,75 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authApi, usersApi } from '../services/api';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useMsal, useIsAuthenticated } from '@azure/msal-react';
+import { loginRequest } from '../auth/authConfig';
+import { usersApi } from '../services/api';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const { instance, accounts, inProgress } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
+
+  // `user` holds the profile from OUR backend (with internal id + role from DB).
+  // The Azure account info (name, email) is in `accounts[0]` but we still need
+  // to call /users/me so we know the user's internal Id and Admin role.
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
+  // Whenever auth state settles, fetch our backend's profile.
   useEffect(() => {
-    if (token) {
-      usersApi.getMe()
-        .then((res) => setUser(res.data))
-        .catch(() => { logout(); })
-        .finally(() => setLoading(false));
-    } else {
+    // Wait until MSAL finishes any in-flight interaction.
+    if (inProgress !== 'none') return;
+
+    if (!isAuthenticated || accounts.length === 0) {
+      setUser(null);
       setLoading(false);
+      return;
     }
-  }, [token]);
 
-  const login = async (email, password) => {
-    const res = await authApi.login({ email, password });
-    const { token: jwt, ...userData } = res.data;
-    localStorage.setItem('token', jwt);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setToken(jwt);
-    setUser(userData);
-    return userData;
-  };
+    let cancelled = false;
+    setLoading(true);
+    usersApi.getMe()
+      .then((res) => { if (!cancelled) setUser(res.data); })
+      .catch((err) => {
+        console.error('Failed to load user profile:', err);
+        if (!cancelled) setUser(null);
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
 
-  const register = async (name, email, password, role) => {
-    const res = await authApi.register({ name, email, password, role });
-    const { token: jwt, ...userData } = res.data;
-    localStorage.setItem('token', jwt);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setToken(jwt);
-    setUser(userData);
-    return userData;
-  };
+    return () => { cancelled = true; };
+  }, [isAuthenticated, accounts, inProgress]);
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
+  // ─── Public API ────────────────────────────────────────────────────────
+  const login = useCallback(async () => {
+    // Redirect-based flow plays well with the IUS tenant and avoids popup blockers.
+    // Use loginPopup() instead if you prefer a popup window.
+    await instance.loginRedirect(loginRequest);
+  }, [instance]);
+
+  const logout = useCallback(async () => {
     setUser(null);
-  };
+    await instance.logoutRedirect({
+      postLogoutRedirectUri: 'http://localhost:5173/'
+    });
+  }, [instance]);
 
   const isAdmin = user?.role === 'Admin';
-  const isSeller = user?.role === 'Seller' || isAdmin;
+  const isSeller = !!user; // every authenticated user can list and sell
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAdmin, isSeller }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        isAdmin,
+        isSeller,
+        // Backwards-compat: components that read `register` won't break.
+        // Registration in Azure AD happens in the tenant admin portal, not here.
+        register: login
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

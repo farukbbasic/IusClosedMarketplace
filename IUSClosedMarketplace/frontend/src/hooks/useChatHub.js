@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
+import { getApiAccessToken } from '../auth/authConfig';
 
 export function useChatHub(threadId, onMessageReceived) {
   const connectionRef = useRef(null);
@@ -15,11 +16,15 @@ export function useChatHub(threadId, onMessageReceived) {
 
     if (!threadId) return;
 
-    const token = localStorage.getItem('token');
-
     const connection = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/chat', {
-        accessTokenFactory: () => token,
+        // accessTokenFactory is called by SignalR every time it needs to
+        // (re)connect, so we always hand out a fresh MSAL token. Returning
+        // a Promise here is supported.
+        accessTokenFactory: async () => {
+          const token = await getApiAccessToken();
+          return token || '';
+        },
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Warning)

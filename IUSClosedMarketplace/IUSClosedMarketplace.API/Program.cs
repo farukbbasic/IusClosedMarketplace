@@ -1,4 +1,4 @@
-using System.Text;
+using IUSClosedMarketplace.API.Auth;
 using IUSClosedMarketplace.API.Middleware;
 using IUSClosedMarketplace.Application.Interfaces.Services;
 using IUSClosedMarketplace.Application.Mappings;
@@ -8,9 +8,10 @@ using IUSClosedMarketplace.Infrastructure.Services;
 using IUSClosedMarketplace.Persistence.Context;
 using IUSClosedMarketplace.Persistence.Repositories.Implementations;
 using IUSClosedMarketplace.Persistence.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,48 +39,51 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IChatNotificationService, ChatNotificationService>();
 
-// ─── SignalR ─────────────────────────────────────────────────────────────────
+// ─── SignalR ────────────────────────────────────────────────────────────────
 builder.Services.AddSignalR();
 
 // ─── AutoMapper ─────────────────────────────────────────────────────────────
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
-// ─── Authentication ─────────────────────────────────────────────────────────
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-    };
-    // SignalR passes JWT via query string (browsers can't set WS headers)
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
+// ─── Authentication: Microsoft Identity Web (Azure AD) ─────────────────────
+// Reads the AzureAd section of appsettings.json (Instance, TenantId, ClientId,
+// Audience). It validates the JWT signature via the IUS tenant's JWKS endpoint
+// and verifies the audience claim against our API's app registration.
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(
+        jwtOptions =>
         {
-            var token = context.Request.Query["access_token"];
-            if (!string.IsNullOrEmpty(token) &&
-                context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+            builder.Configuration.Bind("AzureAd", jwtOptions);
+
+            // SignalR can't set headers on the WebSocket upgrade, so the JS
+            // client passes the access token in the `access_token` query
+            // string. We pull it out here and feed it to the JWT validator.
+            jwtOptions.Events ??= new JwtBearerEvents();
+            var existingOnMessage = jwtOptions.Events.OnMessageReceived;
+            jwtOptions.Events.OnMessageReceived = async context =>
             {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
-    };
-});
+                if (existingOnMessage != null) await existingOnMessage(context);
+
+                var token = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(token) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = token;
+                }
+            };
+        },
+        identityOptions =>
+        {
+            builder.Configuration.Bind("AzureAd", identityOptions);
+        });
 
 builder.Services.AddAuthorization();
+
+// ─── Claims transformation ─────────────────────────────────────────────────
+// Maps the Azure AD identity (Object ID, email) onto our internal User row
+// on every authenticated request. Auto-provisions on first sign-in. Must be
+// a singleton per ASP.NET conventions; it resolves scoped services internally.
+builder.Services.AddSingleton<IClaimsTransformation, AzureAdClaimsTransformation>();
 
 // ─── Controllers ────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
@@ -102,7 +106,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by a space and your JWT token."
+        Description = "Paste an Azure AD access token (without the 'Bearer ' prefix)."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -122,11 +126,15 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ─── CORS ───────────────────────────────────────────────────────────────────
+// 5173 is the Vite dev port (required by the MSAL redirect URI registration).
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost")
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://localhost")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials(); // Required for SignalR
@@ -146,8 +154,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseCors("AllowAll");
+
+// Order matters: Authentication BEFORE Authorization.
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
 
@@ -216,7 +227,7 @@ using (var scope = app.Services.CreateScope())
                     Name NVARCHAR(100) NOT NULL,
                     Email NVARCHAR(200) NOT NULL,
                     PasswordHash NVARCHAR(MAX) NOT NULL,
-                    Role NVARCHAR(20) NOT NULL DEFAULT 'Buyer',
+                    Role NVARCHAR(20) NOT NULL DEFAULT 'User',
                     IsBanned BIT NOT NULL DEFAULT 0,
                     CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
                     UpdatedAt DATETIME2 NULL
@@ -317,7 +328,22 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 
-    // Step 4: Seed data
+    // Step 4: Migrate legacy role values — 'Buyer' and 'Seller' no longer exist
+    // in the enum. Any row written by old code must be updated before EF Core
+    // tries to materialize them, or it will throw and make every query fail.
+    try
+    {
+        var migrated = db.Database.ExecuteSqlRaw(
+            "UPDATE Users SET Role = 'User' WHERE Role IN ('Buyer', 'Seller')");
+        if (migrated > 0)
+            logger.LogInformation("Migrated {Count} user(s) from legacy Buyer/Seller role to User.", migrated);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Role migration step failed — continuing.");
+    }
+
+    // Step 5: Seed data
     try
     {
         if (!db.Categories.Any())
@@ -334,6 +360,10 @@ using (var scope = app.Services.CreateScope())
             db.SaveChanges();
         }
 
+        // Seed admin user. With Azure AD, the password is unused — admin
+        // status is granted by matching the email when the real Azure user
+        // signs in for the first time. Change "admin@ius.edu.ba" to whichever
+        // IUS account should be the initial admin.
         if (!db.Users.Any())
         {
             logger.LogInformation("Seeding admin user...");
@@ -341,7 +371,7 @@ using (var scope = app.Services.CreateScope())
             {
                 Name = "Admin User",
                 Email = "admin@ius.edu.ba",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                PasswordHash = "AZURE_AD_AUTH_NO_LOCAL_PASSWORD",
                 Role = IUSClosedMarketplace.Domain.Enums.UserRole.Admin,
                 IsBanned = false
             });

@@ -89,9 +89,9 @@ public class TransactionService : ITransactionService
             })
             .ToListAsync();
 
-        // Most active sellers
+        // Most active sellers (any user who has at least one listing)
         analytics.MostActiveSellers = await _context.Users
-            .Where(u => u.Role == UserRole.Seller || u.Role == UserRole.Admin)
+            .Where(u => u.Listings.Any())
             .Select(u => new SellerActivityDto
             {
                 SellerName = u.Name,

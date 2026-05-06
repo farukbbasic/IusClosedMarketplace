@@ -30,7 +30,7 @@ public class AuthService : IAuthService
 
         // Parse role
         if (!Enum.TryParse<UserRole>(dto.Role, true, out var role) || role == UserRole.Admin)
-            role = UserRole.Buyer;
+            role = UserRole.User;
 
         var user = new User
         {
