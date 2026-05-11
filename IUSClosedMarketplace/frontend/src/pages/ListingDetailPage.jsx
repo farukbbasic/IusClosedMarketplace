@@ -4,6 +4,7 @@ import { listingsApi, messagesApi, reportsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Modal from '../components/Modal';
+import Icon from '../components/Icon';
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -44,7 +45,7 @@ export default function ListingDetailPage() {
     try {
       const res = await listingsApi.toggleFavorite(id);
       setIsFav(res.data.isFavorited);
-      showToast(res.data.isFavorited ? 'Added to favorites' : 'Removed from favorites');
+      showToast(res.data.isFavorited ? 'Added to saved' : 'Removed from saved');
     } catch { }
   };
 
@@ -53,7 +54,7 @@ export default function ListingDetailPage() {
       await messagesApi.send({
         receiverId: listing.sellerId,
         listingId: listing.id,
-        content: `Hi! I'm interested in "${listing.title}"`
+        content: `Hi! I'm interested in "${listing.title}"`,
       });
       showToast('Message sent!');
       navigate('/messages');
@@ -74,7 +75,15 @@ export default function ListingDetailPage() {
     }
   };
 
-  if (loading) return <div className="page-body"><p>Loading...</p></div>;
+  if (loading) {
+    return (
+      <div className="page-body">
+        <div className="empty-state">
+          <div className="loading-spinner" style={{ margin: '0 auto' }} />
+        </div>
+      </div>
+    );
+  }
   if (!listing) return null;
 
   const isOwn = user?.userId === listing.sellerId;
@@ -82,33 +91,64 @@ export default function ListingDetailPage() {
   return (
     <>
       <div className="page-header">
+        <button
+          className="btn btn-ghost"
+          onClick={() => navigate(-1)}
+          style={{ fontSize: '0.75rem', gap: 4 }}
+        >
+          <Icon name="arrowLeft" size={13} />
+          Back
+        </button>
         <div className="page-header-text">
-          <button className="btn btn-ghost" onClick={() => navigate(-1)} style={{ padding: '0 0 4px', fontSize: 12 }}>← Back</button>
           <h2>{listing.title}</h2>
         </div>
       </div>
+
       <div className="page-body fade-in">
         <div className="detail-layout">
-          <div className="detail-image">📦</div>
+          <div className="detail-image">
+            <Icon name="package" size={64} />
+          </div>
           <div className="detail-info">
             <h2>{listing.title}</h2>
             <div className="detail-price">{listing.price} KM</div>
             <div className="detail-meta">
-              <div className="detail-meta-item">🏷️ {listing.categoryName}</div>
-              <div className="detail-meta-item">⭐ {listing.condition}</div>
-              <div className="detail-meta-item">👤 {listing.sellerName}</div>
-              <div className="detail-meta-item">📅 {new Date(listing.createdAt).toLocaleDateString()}</div>
+              <div className="detail-meta-item">
+                <Icon name="tag" size={14} />
+                {listing.categoryName}
+              </div>
+              <div className="detail-meta-item">
+                <Icon name="star" size={14} />
+                {listing.condition}
+              </div>
+              <div className="detail-meta-item">
+                <Icon name="user" size={14} />
+                {listing.sellerName}
+              </div>
+              <div className="detail-meta-item">
+                <Icon name="calendar" size={14} />
+                {new Date(listing.createdAt).toLocaleDateString()}
+              </div>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 20 }}>{listing.description}</p>
+            <p style={{ fontSize: '0.8125rem', color: 'var(--text2)', lineHeight: 1.65, marginBottom: 22 }}>
+              {listing.description}
+            </p>
             <div className="detail-actions">
               {!isOwn && (
-                <button className="btn btn-primary" onClick={messageSeller}>💬 Message Seller</button>
+                <button className="btn btn-primary" onClick={messageSeller}>
+                  <Icon name="messageSquare" size={14} />
+                  Message Seller
+                </button>
               )}
               <button className={`btn ${isFav ? 'btn-danger' : 'btn-secondary'}`} onClick={toggleFav}>
-                {isFav ? '❤️ Saved' : '🤍 Save'}
+                <Icon name={isFav ? 'heartFilled' : 'heart'} size={14} />
+                {isFav ? 'Saved' : 'Save'}
               </button>
               {!isOwn && (
-                <button className="btn btn-ghost" onClick={() => setReportModal(true)}>🚩 Report</button>
+                <button className="btn btn-ghost" onClick={() => setReportModal(true)}>
+                  <Icon name="flag" size={14} />
+                  Report
+                </button>
               )}
             </div>
           </div>
@@ -116,15 +156,26 @@ export default function ListingDetailPage() {
       </div>
 
       {reportModal && (
-        <Modal title={`Report: ${listing.title}`} onClose={() => setReportModal(false)} footer={
-          <>
-            <button className="btn btn-secondary" onClick={() => setReportModal(false)}>Cancel</button>
-            <button className="btn btn-danger" onClick={submitReport}>🚩 Submit Report</button>
-          </>
-        }>
+        <Modal
+          title={`Report listing`}
+          onClose={() => setReportModal(false)}
+          footer={
+            <>
+              <button className="btn btn-secondary" onClick={() => setReportModal(false)}>Cancel</button>
+              <button className="btn btn-danger" onClick={submitReport}>
+                <Icon name="flag" size={13} />
+                Submit Report
+              </button>
+            </>
+          }
+        >
           <div className="form-group">
             <label>Reason for reporting</label>
-            <textarea value={reportReason} onChange={(e) => setReportReason(e.target.value)} placeholder="Describe the issue..." />
+            <textarea
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              placeholder="Describe the issue..."
+            />
           </div>
         </Modal>
       )}

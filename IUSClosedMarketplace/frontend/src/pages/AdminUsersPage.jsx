@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usersApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import Icon from '../components/Icon';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -35,22 +36,48 @@ export default function AdminUsersPage() {
         </div>
       </div>
       <div className="page-body fade-in">
-        {loading ? <p>Loading...</p> : (
+        {loading ? (
+          <div className="empty-state">
+            <div className="loading-spinner" style={{ margin: '0 auto' }} />
+          </div>
+        ) : (
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
                     <td style={{ fontWeight: 500 }}>{u.name}</td>
                     <td style={{ color: 'var(--text3)' }}>{u.email}</td>
-                    <td><span className={`badge-role badge-${u.role.toLowerCase()}`}>{u.role}</span></td>
-                    <td>{u.isBanned ? <span className="badge-role badge-banned">Banned</span> : <span className="badge-role badge-resolved">Active</span>}</td>
+                    <td>
+                      <span className={`badge-role badge-${u.role.toLowerCase()}`}>{u.role}</span>
+                    </td>
+                    <td>
+                      {u.isBanned
+                        ? <span className="badge-role badge-banned">Banned</span>
+                        : <span className="badge-role badge-resolved">Active</span>
+                      }
+                    </td>
                     <td style={{ color: 'var(--text3)' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
                     <td>
                       {u.id !== currentUser?.userId && (
-                        <button className={`btn btn-sm ${u.isBanned ? 'btn-secondary' : 'btn-danger'}`} onClick={() => toggleBan(u.id)}>
-                          {u.isBanned ? '✓ Unban' : '🚫 Ban'}
+                        <button
+                          className={`btn btn-sm ${u.isBanned ? 'btn-secondary' : 'btn-danger'}`}
+                          onClick={() => toggleBan(u.id)}
+                        >
+                          {u.isBanned
+                            ? <><Icon name="check" size={12} /> Unban</>
+                            : <><Icon name="ban" size={12} /> Ban</>
+                          }
                         </button>
                       )}
                     </td>

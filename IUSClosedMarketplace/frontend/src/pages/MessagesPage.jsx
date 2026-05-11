@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { messagesApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useChatHub } from '../hooks/useChatHub';
+import Icon from '../components/Icon';
 
-// Thread ID formula must match the backend (canonical pair key)
 function getThreadId(userId, otherUserId) {
   if (!userId || !otherUserId) return null;
   return Math.min(userId, otherUserId) * 100000 + Math.max(userId, otherUserId);
@@ -19,17 +19,12 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Works after both login (user.userId from AuthResponseDto)
-  // and page refresh (user.id from UserDto via getMe())
   const currentUserId = user?.userId ?? user?.id;
-
-  // Canonical thread ID for SignalR group — matches backend formula
   const threadId = activeThread ? getThreadId(currentUserId, activeThread.otherUserId) : null;
 
-  // Handle incoming real-time message from SignalR
   const handleNewMessage = useCallback((msg) => {
     setMessages((prev) => {
-      if (prev.some((m) => m.id === msg.id)) return prev; // dedupe
+      if (prev.some((m) => m.id === msg.id)) return prev;
       return [...prev, msg];
     });
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
@@ -64,9 +59,7 @@ export default function MessagesPage() {
         content: newMsg,
       });
       setNewMsg('');
-      // SignalR pushes the new message to both parties — no manual reload needed
     } catch {
-      // Fallback: reload manually if SignalR push fails
       const res = await messagesApi.getConversation(activeThread.otherUserId, activeThread.listingId);
       setMessages(res.data);
     } finally {
@@ -79,16 +72,29 @@ export default function MessagesPage() {
 
   return (
     <>
-      <div className="page-header"><h2>Messages</h2><p>Your conversations</p></div>
+      <div className="page-header">
+        <div className="page-header-text">
+          <h2>Messages</h2>
+          <p>Your conversations</p>
+        </div>
+      </div>
+
       <div className="msg-layout">
         <div className="msg-threads">
-          {loading ? <p style={{ padding: 20 }}>Loading...</p> : threads.length === 0 ? (
-            <div className="empty-state" style={{ padding: 30 }}><p>No conversations yet</p></div>
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+              <div className="loading-spinner" />
+            </div>
+          ) : threads.length === 0 ? (
+            <div className="empty-state" style={{ padding: '40px 20px' }}>
+              <div className="icon"><Icon name="inbox" size={20} /></div>
+              <p>No conversations yet</p>
+            </div>
           ) : (
             threads.map((t, i) => (
               <div
                 key={i}
-                className={`msg-thread-item ${activeThread?.otherUserId === t.otherUserId && activeThread?.listingId === t.listingId ? 'active' : ''}`}
+                className={`msg-thread-item${activeThread?.otherUserId === t.otherUserId && activeThread?.listingId === t.listingId ? ' active' : ''}`}
                 onClick={() => selectThread(t)}
               >
                 <span className="thread-time">{fmtTime(t.lastMessageTime)}</span>
@@ -98,18 +104,23 @@ export default function MessagesPage() {
             ))
           )}
         </div>
+
         <div className="msg-chat">
           {activeThread ? (
             <>
               <div className="msg-chat-header">
-                {activeThread.otherUserName} — {activeThread.listingTitle}
-                {connected && <span style={{ fontSize: 10, color: 'var(--accent)', marginLeft: 8 }}>● live</span>}
+                <Icon name="user" size={14} style={{ color: 'var(--text3)', flexShrink: 0 }} />
+                {activeThread.otherUserName}
+                <span style={{ color: 'var(--text3)', fontWeight: 400, fontSize: '0.75rem' }}>
+                  — {activeThread.listingTitle}
+                </span>
+                {connected && <span className="live-dot" title="Live" />}
               </div>
               <div className="msg-chat-body">
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`msg-bubble ${m.senderId === currentUserId ? 'sent' : 'received'}`}
+                    className={`msg-bubble${m.senderId === currentUserId ? ' sent' : ' received'}`}
                   >
                     {m.content}
                     <div className="time">{fmtTime(m.createdAt)}</div>
@@ -125,14 +136,16 @@ export default function MessagesPage() {
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                 />
                 <button className="btn btn-primary" onClick={sendMessage} disabled={sending}>
-                  {sending ? '...' : 'Send'}
+                  <Icon name="send" size={14} />
+                  {sending ? 'Sending...' : 'Send'}
                 </button>
               </div>
             </>
           ) : (
             <div className="empty-state" style={{ margin: 'auto' }}>
-              <div className="icon">💬</div>
-              <p>Select a conversation</p>
+              <div className="icon"><Icon name="messageSquare" size={22} /></div>
+              <h3>No conversation selected</h3>
+              <p>Pick one from the list</p>
             </div>
           )}
         </div>

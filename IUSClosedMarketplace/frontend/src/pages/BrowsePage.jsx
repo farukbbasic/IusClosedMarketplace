@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listingsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import Icon from '../components/Icon';
 
 export default function BrowsePage() {
   const navigate = useNavigate();
@@ -77,11 +78,16 @@ export default function BrowsePage() {
           <p>Find what you need from the IUS community</p>
         </div>
       </div>
+
       <div className="page-body fade-in">
         <div className="filters-bar">
           <div className="search-box">
-            <span style={{ color: 'var(--text3)' }}>🔍</span>
-            <input placeholder="Search items..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Icon name="search" size={14} style={{ color: 'var(--text3)', flexShrink: 0 }} />
+            <input
+              placeholder="Search items..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">All Categories</option>
@@ -90,29 +96,39 @@ export default function BrowsePage() {
           <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
             <option value="all">Any Price</option>
             <option value="0-50">Under 50 KM</option>
-            <option value="50-200">50–200 KM</option>
+            <option value="50-200">50 – 200 KM</option>
             <option value="200+">200+ KM</option>
           </select>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="latest">Latest</option>
-            <option value="price-low">Price: Low → High</option>
-            <option value="price-high">Price: High → Low</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
           </select>
         </div>
 
         {loading ? (
-          <div className="empty-state"><p>Loading...</p></div>
+          <div className="empty-state">
+            <div className="loading-spinner" style={{ margin: '0 auto' }} />
+          </div>
         ) : listings.length === 0 ? (
-          <div className="empty-state"><div className="icon">🔍</div><p>No items found</p></div>
+          <div className="empty-state">
+            <div className="icon"><Icon name="search" size={22} /></div>
+            <h3>No items found</h3>
+            <p>Try adjusting your filters</p>
+          </div>
         ) : (
           <div className="listings-grid">
             {listings.map((l) => (
               <div key={l.id} className="card listing-card" onClick={() => navigate(`/listings/${l.id}`)}>
                 <div className="listing-thumb">
-                  📦
+                  <Icon name="package" size={38} />
                   <span className="condition-badge">{l.condition}</span>
-                  <button className={`fav-btn ${isFav(l.id) ? 'active' : ''}`} onClick={(e) => toggleFav(e, l.id)}>
-                    {isFav(l.id) ? '❤️' : '🤍'}
+                  <button
+                    className={`fav-btn${isFav(l.id) ? ' active' : ''}`}
+                    onClick={(e) => toggleFav(e, l.id)}
+                    title={isFav(l.id) ? 'Remove from saved' : 'Save item'}
+                  >
+                    <Icon name={isFav(l.id) ? 'heartFilled' : 'heart'} size={13} />
                   </button>
                 </div>
                 <div className="listing-info">
