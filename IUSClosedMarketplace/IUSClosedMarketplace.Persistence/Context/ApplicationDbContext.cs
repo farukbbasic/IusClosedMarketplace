@@ -1,6 +1,7 @@
 using IUSClosedMarketplace.Domain.Entities;
 using IUSClosedMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IUSClosedMarketplace.Persistence.Context;
 
@@ -22,6 +23,13 @@ public class ApplicationDbContext : DbContext
 
         // Apply all configurations from this assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+        // Store TransactionStatus enum as its string name in the DB column
+        modelBuilder.Entity<Transaction>()
+            .Property(t => t.Status)
+            .HasConversion(new EnumToStringConverter<TransactionStatus>())
+            .HasMaxLength(20);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

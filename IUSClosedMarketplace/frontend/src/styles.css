@@ -565,6 +565,18 @@ tbody tr:hover { background: var(--bg3); }
 .badge-pending { background: var(--amber-bg); color: var(--amber); }
 .badge-resolved { background: var(--green-bg); color: var(--green); }
 .badge-banned { background: var(--red-bg); color: var(--red); }
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge-confirmed { background: var(--green-bg); color: var(--green); }
+.badge-rejected { background: var(--red-bg); color: var(--red); }
 
 /* ─── Messaging ───────────────────────────────────── */
 .msg-layout {

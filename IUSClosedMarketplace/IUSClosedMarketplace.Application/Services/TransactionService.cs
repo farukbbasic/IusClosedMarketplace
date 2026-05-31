@@ -43,18 +43,23 @@ public class TransactionService : ITransactionService
         if (!listing.IsActive)
             throw new InvalidOperationException("This listing is no longer active.");
 
+        var alreadyRequested = await _context.Transactions
+            .AnyAsync(t => t.ListingId == dto.ListingId && t.BuyerId == buyerId && t.Status == TransactionStatus.Pending);
+        if (alreadyRequested)
+            throw new InvalidOperationException("You already have a pending request for this item.");
+
         var transaction = new Transaction
         {
             BuyerId = buyerId,
             SellerId = listing.SellerId,
             ListingId = dto.ListingId,
-            Amount = listing.Price
+            Amount = listing.Price,
+            Status = TransactionStatus.Pending
         };
 
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
 
-        // Reload with includes
         var created = await _context.Transactions
             .Include(t => t.Buyer)
             .Include(t => t.Seller)
@@ -62,6 +67,52 @@ public class TransactionService : ITransactionService
             .FirstAsync(t => t.Id == transaction.Id);
 
         return _mapper.Map<TransactionDto>(created);
+    }
+
+    public async Task<TransactionDto> ConfirmAsync(int transactionId, int sellerId)
+    {
+        var transaction = await _context.Transactions
+            .Include(t => t.Buyer)
+            .Include(t => t.Seller)
+            .Include(t => t.Listing)
+            .FirstOrDefaultAsync(t => t.Id == transactionId)
+            ?? throw new KeyNotFoundException("Transaction not found.");
+
+        if (transaction.SellerId != sellerId)
+            throw new UnauthorizedAccessException("Only the seller can confirm this transaction.");
+
+        if (transaction.Status != TransactionStatus.Pending)
+            throw new InvalidOperationException("Only pending transactions can be confirmed.");
+
+        transaction.Status = TransactionStatus.Confirmed;
+        transaction.Listing.IsActive = false;
+
+        // Auto-reject other pending requests for the same listing
+        var otherPending = await _context.Transactions
+            .Where(t => t.ListingId == transaction.ListingId && t.Id != transactionId && t.Status == TransactionStatus.Pending)
+            .ToListAsync();
+        foreach (var t in otherPending)
+            t.Status = TransactionStatus.Rejected;
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<TransactionDto>(transaction);
+    }
+
+    public async Task RejectAsync(int transactionId, int sellerId)
+    {
+        var transaction = await _context.Transactions
+            .FirstOrDefaultAsync(t => t.Id == transactionId)
+            ?? throw new KeyNotFoundException("Transaction not found.");
+
+        if (transaction.SellerId != sellerId)
+            throw new UnauthorizedAccessException("Only the seller can reject this transaction.");
+
+        if (transaction.Status != TransactionStatus.Pending)
+            throw new InvalidOperationException("Only pending transactions can be rejected.");
+
+        transaction.Status = TransactionStatus.Rejected;
+        await _context.SaveChangesAsync();
     }
 
     public async Task<AnalyticsDto> GetAnalyticsAsync()

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { transactionsApi, listingsApi } from '../services/api';
+import { transactionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import Modal from '../components/Modal';
 import Icon from '../components/Icon';
 
 export default function TransactionsPage() {
@@ -10,8 +9,6 @@ export default function TransactionsPage() {
   const { showToast } = useToast();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [availableListings, setAvailableListings] = useState([]);
 
   useEffect(() => { load(); }, []);
 
@@ -22,23 +19,33 @@ export default function TransactionsPage() {
     } catch { } finally { setLoading(false); }
   };
 
-  const openPurchaseModal = async () => {
+  const handleConfirm = async (id) => {
     try {
-      const res = await listingsApi.getAll();
-      setAvailableListings(res.data.filter((l) => l.sellerId !== user?.userId));
-      setShowModal(true);
-    } catch { }
-  };
-
-  const completePurchase = async (listingId) => {
-    try {
-      await transactionsApi.create({ listingId });
-      showToast('Transaction completed!');
-      setShowModal(false);
+      await transactionsApi.confirm(id);
+      showToast('Sale confirmed! Listing removed from browse.');
       load();
     } catch (err) {
-      showToast(err.response?.data?.message || 'Failed', 'error');
+      showToast(err.response?.data?.message || 'Failed to confirm', 'error');
     }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      await transactionsApi.reject(id);
+      showToast('Request declined.');
+      load();
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to decline', 'error');
+    }
+  };
+
+  const statusBadge = (status) => {
+    const map = {
+      Pending: 'badge-pending',
+      Confirmed: 'badge-confirmed',
+      Rejected: 'badge-rejected',
+    };
+    return <span className={`badge-status ${map[status] || ''}`}>{status}</span>;
   };
 
   return (
@@ -46,12 +53,8 @@ export default function TransactionsPage() {
       <div className="page-header">
         <div className="page-header-text">
           <h2>Transactions</h2>
-          <p>Your purchase and sale history</p>
+          <p>Your purchase requests and sales</p>
         </div>
-        <button className="btn btn-primary" onClick={openPurchaseModal}>
-          <Icon name="shoppingBag" size={14} />
-          Complete a Purchase
-        </button>
       </div>
 
       <div className="page-body fade-in">
@@ -63,7 +66,7 @@ export default function TransactionsPage() {
           <div className="empty-state">
             <div className="icon"><Icon name="fileText" size={22} /></div>
             <h3>No transactions yet</h3>
-            <p>Completed purchases will appear here</p>
+            <p>Purchase requests and sales will appear here</p>
           </div>
         ) : (
           <div className="table-wrap">
@@ -71,62 +74,54 @@ export default function TransactionsPage() {
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Buyer</th>
-                  <th>Seller</th>
+                  <th>Role</th>
+                  <th>Other Party</th>
                   <th>Amount</th>
+                  <th>Status</th>
                   <th>Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((t) => (
-                  <tr key={t.id}>
-                    <td style={{ fontWeight: 500 }}>{t.listingTitle}</td>
-                    <td style={{ color: 'var(--text2)' }}>{t.buyerName}</td>
-                    <td style={{ color: 'var(--text2)' }}>{t.sellerName}</td>
-                    <td style={{ color: 'var(--green)', fontWeight: 600 }}>{t.amount} KM</td>
-                    <td style={{ color: 'var(--text3)' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
-                  </tr>
-                ))}
+                {transactions.map((t) => {
+                  const isBuyer = t.buyerId === user?.id;
+                  const isPending = t.status === 'Pending';
+                  return (
+                    <tr key={t.id}>
+                      <td style={{ fontWeight: 500 }}>{t.listingTitle}</td>
+                      <td>
+                        <span className={`badge-role ${isBuyer ? 'badge-buyer' : 'badge-seller'}`}>
+                          {isBuyer ? 'Buying' : 'Selling'}
+                        </span>
+                      </td>
+                      <td style={{ color: 'var(--text2)' }}>
+                        {isBuyer ? t.sellerName : t.buyerName}
+                      </td>
+                      <td style={{ color: 'var(--green)', fontWeight: 600 }}>{t.amount} KM</td>
+                      <td>{statusBadge(t.status)}</td>
+                      <td style={{ color: 'var(--text3)' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        {!isBuyer && isPending && (
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button className="btn btn-primary btn-sm" onClick={() => handleConfirm(t.id)}>
+                              <Icon name="check" size={12} />
+                              Confirm
+                            </button>
+                            <button className="btn btn-danger btn-sm" onClick={() => handleReject(t.id)}>
+                              <Icon name="x" size={12} />
+                              Decline
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
-
-      {showModal && (
-        <Modal title="Complete a Purchase" onClose={() => setShowModal(false)}>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text2)', marginBottom: 16 }}>
-            Select an item you purchased:
-          </p>
-          {availableListings.length === 0 ? (
-            <p style={{ color: 'var(--text3)', fontSize: '0.8125rem' }}>No listings available</p>
-          ) : (
-            availableListings.map((l) => (
-              <div
-                key={l.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '10px 0',
-                  borderBottom: '1px solid var(--border)',
-                  gap: 12,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Icon name="package" size={14} style={{ color: 'var(--text3)', flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.8125rem' }}>
-                    {l.title} — <strong style={{ color: 'var(--accent)' }}>{l.price} KM</strong>
-                  </span>
-                </div>
-                <button className="btn btn-primary btn-sm" onClick={() => completePurchase(l.id)}>
-                  Complete
-                </button>
-              </div>
-            ))
-          )}
-        </Modal>
-      )}
     </>
   );
 }

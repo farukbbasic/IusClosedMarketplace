@@ -41,6 +41,7 @@ public class AutoMapperProfile : Profile
         CreateMap<Transaction, TransactionDto>()
             .ForMember(d => d.BuyerName, o => o.MapFrom(s => s.Buyer != null ? s.Buyer.Name : ""))
             .ForMember(d => d.SellerName, o => o.MapFrom(s => s.Seller != null ? s.Seller.Name : ""))
-            .ForMember(d => d.ListingTitle, o => o.MapFrom(s => s.Listing != null ? s.Listing.Title : ""));
+            .ForMember(d => d.ListingTitle, o => o.MapFrom(s => s.Listing != null ? s.Listing.Title : ""))
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
     }
 }

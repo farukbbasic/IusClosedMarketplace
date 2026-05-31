@@ -321,6 +321,12 @@ using (var scope = app.Services.CreateScope())
 
             logger.LogInformation("All 7 tables created.");
         }
+
+        // Add Status column to Transactions if it was created before this feature
+        db.Database.ExecuteSqlRaw(@"
+            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Transactions') AND name = 'Status')
+                ALTER TABLE Transactions ADD Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Transactions_Status DEFAULT 'Pending';
+        ");
     }
     catch (Exception ex)
     {

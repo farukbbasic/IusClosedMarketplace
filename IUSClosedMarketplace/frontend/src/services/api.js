@@ -89,6 +89,8 @@ export const reportsApi = {
 export const transactionsApi = {
   getMine: () => api.get('/transactions'),
   create: (data) => api.post('/transactions', data),
+  confirm: (id) => api.put(`/transactions/${id}/confirm`),
+  reject: (id) => api.put(`/transactions/${id}/reject`),
   getAnalytics: () => api.get('/transactions/analytics'),
 };
 

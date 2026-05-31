@@ -1,10 +1,12 @@
 using IUSClosedMarketplace.Domain.Common;
+using IUSClosedMarketplace.Domain.Enums;
 
 namespace IUSClosedMarketplace.Domain.Entities;
 
 public class Transaction : BaseEntity
 {
     public decimal Amount { get; set; }
+    public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
 
     // Foreign keys
     public int BuyerId { get; set; }

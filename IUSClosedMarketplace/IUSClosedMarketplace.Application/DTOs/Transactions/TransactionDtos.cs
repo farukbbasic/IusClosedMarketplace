@@ -6,6 +6,7 @@ public class TransactionDto
 {
     public int Id { get; set; }
     public decimal Amount { get; set; }
+    public string Status { get; set; } = string.Empty;
     public int BuyerId { get; set; }
     public string BuyerName { get; set; } = string.Empty;
     public int SellerId { get; set; }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { listingsApi, messagesApi, reportsApi } from '../services/api';
+import { listingsApi, messagesApi, reportsApi, transactionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Modal from '../components/Modal';
@@ -17,6 +17,8 @@ export default function ListingDetailPage() {
   const [reportModal, setReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [activeImg, setActiveImg] = useState(0);
+  const [buyModal, setBuyModal] = useState(false);
+  const [buying, setBuying] = useState(false);
 
   useEffect(() => {
     loadListing();
@@ -64,6 +66,20 @@ export default function ListingDetailPage() {
     }
   };
 
+  const handleBuy = async () => {
+    setBuying(true);
+    try {
+      await transactionsApi.create({ listingId: listing.id });
+      showToast('Request sent! Waiting for seller to confirm.');
+      setBuyModal(false);
+      navigate('/transactions');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Request failed', 'error');
+    } finally {
+      setBuying(false);
+    }
+  };
+
   const submitReport = async () => {
     if (!reportReason.trim()) return;
     try {
@@ -87,7 +103,7 @@ export default function ListingDetailPage() {
   }
   if (!listing) return null;
 
-  const isOwn = user?.userId === listing.sellerId;
+  const isOwn = user?.id === listing.sellerId;
   const images = (() => { try { return JSON.parse(listing.imageUrls || '[]'); } catch { return []; } })();
 
   return (
@@ -159,7 +175,13 @@ export default function ListingDetailPage() {
             </p>
             <div className="detail-actions">
               {!isOwn && (
-                <button className="btn btn-primary" onClick={messageSeller}>
+                <button className="btn btn-primary" onClick={() => setBuyModal(true)}>
+                  <Icon name="shoppingBag" size={14} />
+                  Buy Now
+                </button>
+              )}
+              {!isOwn && (
+                <button className="btn btn-secondary" onClick={messageSeller}>
                   <Icon name="messageSquare" size={14} />
                   Message Seller
                 </button>
@@ -178,6 +200,29 @@ export default function ListingDetailPage() {
           </div>
         </div>
       </div>
+
+      {buyModal && (
+        <Modal
+          title="Confirm Purchase"
+          onClose={() => setBuyModal(false)}
+          footer={
+            <>
+              <button className="btn btn-secondary" onClick={() => setBuyModal(false)} disabled={buying}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleBuy} disabled={buying}>
+                {buying ? <><div className="loading-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} /> Sending...</> : 'Send Request'}
+              </button>
+            </>
+          }
+        >
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text2)', lineHeight: 1.6 }}>
+            Send a purchase request for <strong style={{ color: 'var(--text)' }}>{listing.title}</strong> at{' '}
+            <strong style={{ color: 'var(--accent)' }}>{listing.price} KM</strong>.
+          </p>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text3)', marginTop: 8 }}>
+            The seller will need to confirm your request before the sale is finalised.
+          </p>
+        </Modal>
+      )}
 
       {reportModal && (
         <Modal

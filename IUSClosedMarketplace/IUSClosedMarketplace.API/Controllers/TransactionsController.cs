@@ -34,6 +34,22 @@ public class TransactionsController : ControllerBase
         return Ok(transaction);
     }
 
+    [HttpPut("{id}/confirm")]
+    public async Task<ActionResult<TransactionDto>> Confirm(int id)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var transaction = await _transactionService.ConfirmAsync(id, userId);
+        return Ok(transaction);
+    }
+
+    [HttpPut("{id}/reject")]
+    public async Task<ActionResult> Reject(int id)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _transactionService.RejectAsync(id, userId);
+        return NoContent();
+    }
+
     [HttpGet("analytics")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<AnalyticsDto>> GetAnalytics()
