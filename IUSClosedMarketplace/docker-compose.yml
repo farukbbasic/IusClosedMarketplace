@@ -39,6 +39,8 @@ services:
       AzureAd__Audience: "api://562c6df4-0ce8-4165-8969-f300f4c1842a"
       # Legacy JWT settings still in appsettings.json — unused at runtime
       # but harmless. Remove once you're sure nothing references them.
+    volumes:
+      - uploads-data:/app/wwwroot/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -62,3 +64,4 @@ services:
 
 volumes:
   sqlserver-data:
+  uploads-data:

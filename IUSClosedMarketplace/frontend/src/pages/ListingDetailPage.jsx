@@ -16,6 +16,7 @@ export default function ListingDetailPage() {
   const [isFav, setIsFav] = useState(false);
   const [reportModal, setReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
+  const [activeImg, setActiveImg] = useState(0);
 
   useEffect(() => {
     loadListing();
@@ -87,6 +88,7 @@ export default function ListingDetailPage() {
   if (!listing) return null;
 
   const isOwn = user?.userId === listing.sellerId;
+  const images = (() => { try { return JSON.parse(listing.imageUrls || '[]'); } catch { return []; } })();
 
   return (
     <>
@@ -106,8 +108,30 @@ export default function ListingDetailPage() {
 
       <div className="page-body fade-in">
         <div className="detail-layout">
-          <div className="detail-image">
-            <Icon name="package" size={64} />
+          <div>
+            <div className="detail-image">
+              {images.length > 0
+                ? <img src={images[activeImg]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 'var(--radius-lg)' }} />
+                : <Icon name="package" size={64} />
+              }
+            </div>
+            {images.length > 1 && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                {images.map((url, i) => (
+                  <div
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    style={{
+                      width: 56, height: 56, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+                      border: `2px solid ${i === activeImg ? 'var(--accent)' : 'var(--border)'}`,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="detail-info">
             <h2>{listing.title}</h2>

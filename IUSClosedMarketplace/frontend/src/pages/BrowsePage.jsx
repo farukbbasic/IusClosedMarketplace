@@ -4,6 +4,10 @@ import { listingsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../components/Icon';
 
+const parseImages = (imageUrls) => {
+  try { return JSON.parse(imageUrls || '[]'); } catch { return []; }
+};
+
 export default function BrowsePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -121,7 +125,10 @@ export default function BrowsePage() {
             {listings.map((l) => (
               <div key={l.id} className="card listing-card" onClick={() => navigate(`/listings/${l.id}`)}>
                 <div className="listing-thumb">
-                  <Icon name="package" size={38} />
+                  {parseImages(l.imageUrls)[0]
+                    ? <img src={parseImages(l.imageUrls)[0]} alt={l.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <Icon name="package" size={38} />
+                  }
                   <span className="condition-badge">{l.condition}</span>
                   <button
                     className={`fav-btn${isFav(l.id) ? ' active' : ''}`}

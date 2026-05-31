@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using IUSClosedMarketplace.Application.DTOs.Listings;
 using IUSClosedMarketplace.Application.Interfaces.Services;
+using IUSClosedMarketplace.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,40 @@ namespace IUSClosedMarketplace.API.Controllers;
 public class ListingsController : ControllerBase
 {
     private readonly IListingService _listingService;
+    private readonly IFileStorageService _fileStorage;
 
-    public ListingsController(IListingService listingService)
+    public ListingsController(IListingService listingService, IFileStorageService fileStorage)
     {
         _listingService = listingService;
+        _fileStorage = fileStorage;
+    }
+
+    [HttpPost("upload-images")]
+    [Authorize]
+    public async Task<ActionResult<string[]>> UploadImages([FromForm] IFormFileCollection files)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No files provided.");
+        if (files.Count > 5)
+            return BadRequest("Maximum 5 images per listing.");
+
+        var allowed = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" };
+        const long maxBytes = 5 * 1024 * 1024;
+
+        var urls = new List<string>();
+        foreach (var file in files)
+        {
+            if (!allowed.Contains(file.ContentType.ToLower()))
+                return BadRequest($"File type '{file.ContentType}' is not allowed. Use JPEG, PNG, GIF or WebP.");
+            if (file.Length > maxBytes)
+                return BadRequest($"'{file.FileName}' exceeds the 5 MB limit.");
+
+            using var stream = file.OpenReadStream();
+            var url = await _fileStorage.SaveFileAsync(stream, file.FileName, "listings");
+            urls.Add(url);
+        }
+
+        return Ok(urls);
     }
 
     [HttpGet]

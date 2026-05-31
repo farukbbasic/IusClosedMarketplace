@@ -57,6 +57,11 @@ export const listingsApi = {
   search: (params) => api.get('/listings/search', { params }),
   getMyListings: () => api.get('/listings/my-listings'),
   getBySeller: (id) => api.get(`/listings/seller/${id}`),
+  uploadImages: (files) => {
+    const form = new FormData();
+    files.forEach(f => form.append('files', f));
+    return api.post('/listings/upload-images', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
   create: (data) => api.post('/listings', data),
   update: (id, data) => api.put(`/listings/${id}`, data),
   delete: (id) => api.delete(`/listings/${id}`),
